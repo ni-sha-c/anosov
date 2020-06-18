@@ -12,7 +12,7 @@ function step(x1, s=0., n=1)
     m, d = size(x1)
     x = zeros(m,n+1) 
     x[1:m] = x1
-    f(x) = (2*x + s*sin(2*pi*x)) % 1
+    f(x) = (2*x + s*sin(pi*x/8)) % 1
     for i=1:n
         x[:,i+1] = f.(x[:,i]) 
     end
@@ -40,8 +40,17 @@ function construct_hankel_basis(x, s, n, f)
     Phi1 = view(f_trj, 1:m, 2:(n+1))
     return Phi, Phi1
 end
-function fun(x)
+function fun_frr(x)
     return exp(2*pi*im*x)
+end
+function fun_ind(x)
+	if x < 0.1
+		return 1.
+	end
+	return 0.
+end
+function fun_id(x)
+	return x
 end
 """
 Solves the following minimization problem for H:
@@ -69,7 +78,7 @@ function dmd(x, s, n, f)
     else
         Phi, Phi1 = construct_basis(x, s, n, f)
     end
-    return (Phi' * Phi)\(Phi' * Phi1)
+	return (Phi' * Phi)\(Phi' * Phi1)
 end
 """
 Inputs: 
