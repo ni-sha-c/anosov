@@ -9,7 +9,6 @@ using PyPlot
 """
 function edmd_wave(s,n_basis)
 	n_samples = 10000
-	#x = LinRange(0.,2,n_samples+2)[2:end-1]
 	n_steps = 500
 	x = zeros(n_samples+1)
 	x[1] = 2*rand()
@@ -71,18 +70,17 @@ end
 
 
 
-s = 0.001 
-m = 0
-n = 64
-L_real, L_imag = edmd_pluck(s, m, n)
+#s = 0.001 
+#m = 0
+#n = 64
+#L_real, L_imag = edmd_pluck(s, m, n)
 fig, ax = subplots(1,1)
-ax.plot(L_real,L_imag,"o",label="s = $s, n = $m")
+#ax.plot(L_real,L_imag,"o",label="s = $s, n = $m")
 
 
-s = 0.1
-m = 6
-L_real, L_imag = edmd_pluck(s, m, n)
-ax.plot(L_real,L_imag,"<",label="s = $s, n = $m")
+s = 0.2
+L_real, L_imag = edmd_wave(s, 21)
+ax.plot(L_real,L_imag,"X",label="s = $s")
 
 
 x = LinRange(0.,2*pi,1000)
