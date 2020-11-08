@@ -1,4 +1,5 @@
 include("plucked_map.jl")
+include("wave_map.jl")
 using LinearAlgebra
 using PyPlot
 """
@@ -6,15 +7,15 @@ using PyPlot
     the Koopman operator
 
 """
-function edmd()
-    n_basis = 64
+function edmd(s,m,n_basis)
 	n_samples = 10000
 	#x = LinRange(0.,2,n_samples+2)[2:end-1]
-	s = 0.5
-	m = 10
 	n_steps = 500
 	x = zeros(n_samples+1)
 	x[1] = 2*rand()
+	for i = 1:n_steps
+		x[1] = osc_tent(x[1],s,m)
+	end
 	for i = 2:n_samples+1
 		x[i] = osc_tent(x[i-1],s,m)
 	end
@@ -55,15 +56,29 @@ function edmd()
 	return L_real, L_imag	
 end
 
-L_real, L_imag = edmd()
+s = 0.001 
+m = 0
+n = 64
+L_real, L_imag = edmd(s, m, n)
 fig, ax = subplots(1,1)
-ax.plot(L_real,L_imag,".")
+ax.plot(L_real,L_imag,"o",label="s = $s, n = $m")
+
+
+s = 0.1
+m = 6
+L_real, L_imag = edmd(s, m, n)
+ax.plot(L_real,L_imag,"<",label="s = $s, n = $m")
+
+
 x = LinRange(0.,2*pi,1000)
 ax.plot(cos.(x), sin.(x), "k.", ms=0.1)
 ax.plot(0.5*cos.(x), 0.5*sin.(x), "k.", ms=0.1)
-ax.plot(0.25*cos.(x), 0.25*sin.(x), "k.", ms=0.1)
-ax.plot(0.75*cos.(x), 0.75*sin.(x), "k.", ms=0.1)
 
+ax.legend(fontsize=20,loc="top right")
+ax.xaxis.set_tick_params(labelsize=20)
+ax.yaxis.set_tick_params(labelsize=20)
+ax.grid(true)
+ax.axis("scaled")
 #u = rand(1,2)
 #s = [0.7,0.3]
 #n = 1000
