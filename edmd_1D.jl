@@ -1,5 +1,6 @@
 include("plucked_map.jl")
 include("wave_map.jl")
+include("markov.jl")
 using LinearAlgebra
 using PyPlot
 """
@@ -58,8 +59,24 @@ function edmd_pluck(s,m,n_basis)
 	end
 	return solveK(F0, F1)
 end
-
-
+function ulam_wave(s,nbins)
+	n_samples = 1000000
+	x = zeros(n_samples)
+	x[1] = 2*rand()
+	for i = 2:n_samples
+		x[i] = wave_tent(x[i-1],s)
+	end
+	return solveP(x,nbins)
+end
+function ulam_pluck(s,m,nbins)
+	n_samples = 1000000
+	x = zeros(n_samples)
+	x[1] = 2*rand()
+	for i = 2:n_samples
+		x[i] = osc_tent(x[i-1],s,m)
+	end
+	return solveP(x,nbins)
+end
 function solveK(F0,F1)
 	K =	 (F1'*F0)*inv(F0'*F0) 
 	L = eigvals(K)	
@@ -67,8 +84,13 @@ function solveK(F0,F1)
 	L_imag = imag(L)
 	return L_real, L_imag
 end
-
-
+function solveP(x,nbins)
+	P = markov(x,nbins)
+	L = eigvals(P)
+	L_real = real(L)
+	L_imag = imag(L)
+	return L_real, L_imag
+end
 
 #s = 0.001 
 #m = 0
@@ -80,6 +102,8 @@ fig, ax = subplots(1,1)
 
 s = 0.2
 L_real, L_imag = edmd_wave(s, 21)
+ax.plot(L_real,L_imag,"X",label="s = $s")
+L_real, L_imag = ulam_pluck(s,0,21)
 ax.plot(L_real,L_imag,"X",label="s = $s")
 
 
